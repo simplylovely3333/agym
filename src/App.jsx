@@ -1,151 +1,819 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
-import { MessageCircle, Instagram, ArrowRight, X, Menu, ShieldCheck, Leaf, History, MapPin, Users, Clock } from 'lucide-react'
+import {
+  MessageCircle, Instagram, ArrowRight, X, Menu,
+  ShieldCheck, Leaf, Zap, Award,
+  MapPin, ChevronLeft, ChevronRight, Search, ShoppingBag
+} from 'lucide-react'
 import './index.css'
 
-// --- Data ---
-const PRODUCTS = Array.from({ length: 20 }, (_, i) => ({
-  id: i + 1,
-  name: [`Titan Whey`, `Titan Mass`, `Black Energy`, `Pure Creatine`, `Titan Burn`][i % 5] + ` PRO v${Math.floor(i/5 + 1)}`,
-  type: [`WHEY`, `MASS`, `PRE`, `CREA`, `BURN`][i % 5],
-  desc: "Максимальная концентрация для взрывного роста и восстановления.",
-  color: i % 2 === 0 ? "#000" : "#e62117",
-  isTop: i < 5
-}))
+// ============================================================
+// TRANSLATIONS
+// ============================================================
+const T = {
+  ru: {
+    // Nav
+    navProducts: 'Товары',
+    navAbout: 'О нас',
+    navContacts: 'Контакты',
+    navOrder: 'Заказать',
 
-const PARTNERS = [
-  "Gold's Gym", "World Class", "Invictus", "FitNation", "Olympic"
+    // Announcement
+    announce: [
+      'Бесплатная доставка от 10 000 ₸',
+      'Новинка: Titan Whey Black Edition',
+      'Скидка 20% при заказе от 3 позиций',
+      'Официальный поставщик Gold\'s Gym',
+      'Работаем по всему Казахстану',
+    ],
+
+    // Hero
+    heroTag: 'Казахстан • Шымкент',
+    heroSub: 'Премиальное спортивное питание — RED EDITION 2.0. Топливо для тех, кто идёт до конца в каждом сете.',
+    heroCta: 'Смотреть каталог',
+    heroCtaContact: 'Контакты',
+    stat1: 'лет на рынке',
+    stat2: 'магазина в Шымкенте',
+    stat3: 'продуктов',
+    stat4: 'довольных клиентов',
+
+    // Scroller section
+    scrollerTag: 'Весь ассортимент',
+    scrollerTitle1: 'ПОЛНАЯ',
+    scrollerTitle2: 'ЛИНЕЙКА',
+    scrollHint: 'Листайте →',
+
+    // Certificates
+    certTag: 'Документы',
+    certTitle1: 'НАШИ',
+    certTitle2: 'СЕРТИФИКАТЫ',
+    certItems: [
+      { title: 'Сертификат', accent: 'QUALITY', text: 'Подтвержденная система менеджмента качества.' },
+      { title: 'Сертификат', accent: 'CONTROL', text: 'Международный стандарт контроля качества.' },
+      { title: 'Сертификат', accent: 'SAFETY', text: 'Гарантия безопасности пищевой продукции.' },
+      { title: 'Сертификат', accent: 'HACCP', text: 'Анализ рисков и критические контрольные точки.' },
+      { title: 'Сертификат', accent: 'ISO 22000', text: 'Система менеджмента безопасности пищепродуктов.' },
+      { title: 'Сертификат', accent: 'STANDARD', text: 'Соответствие мировым отраслевым стандартам.' },
+    ],
+
+    // Catalog
+    catalogTag: 'Хиты продаж',
+    catalogTitle1: 'НАШ',
+    catalogTitle2: 'КАТАЛОГ',
+    buyNow: 'Купить сейчас',
+    protein: 'Белок',
+    calories: 'Калории',
+    unitServ: 'порц.',
+    unitKcalServ: 'ккал/порц.',
+    // SVG Labels
+    svgProtein: 'БЕЛОК',
+    svgEnergy: 'ЭНЕРГИЯ',
+    svgCarbs: 'УГЛЕВОДЫ',
+    svgServings: 'ПОРЦИЙ',
+    svgMassGainer: 'ГЕЙНЕР ДЛЯ МАССЫ',
+    svgPremiumWhey: 'ПРЕМИУМ ПРОТЕИН',
+    svgMuscleGrowth: 'РОСТ МЫШЦ',
+    svgPerformance: 'СИЛА И МОЩЬ',
+    svgRecovery: 'ВОССТАНОВЛЕНИЕ',
+
+    // Products
+    products: [
+      {
+        type: 'ГЕЙНЕР',
+        subtitle: 'Протеиновый напиток на основе молока и сывороточного белка',
+        benefits: ['Увеличение мышечной массы', 'Быстрый набор веса', 'Богат белком и углеводами', 'Улучшение мышечной силы'],
+      },
+      {
+        type: 'СУХАЯ МАССА',
+        subtitle: 'Протеиновый напиток на основе сыворотки, горохового и соевого протеина',
+        benefits: ['Оптимальный рост мышц', 'Увеличение размера и силы', 'Улучшение спортивных результатов', 'Анаболическое восстановление'],
+      },
+      {
+        type: 'ВОССТАНОВЛЕНИЕ',
+        subtitle: 'Порошок аминокислот с разветвлённой цепью (BCAA)',
+        benefits: ['L-Лейцин, L-Изолейцин, L-Валин', 'Снижение боли в мышцах', 'Стимуляция синтеза белка', 'Поддержка роста мышц'],
+      },
+      {
+        type: 'СИЛА И МОЩЬ',
+        subtitle: 'Порошок моногидрата креатина',
+        benefits: ['До, во время и после тренировки', 'Улучшение силы и мощи', 'Повышение фокуса и энергии', 'Улучшение спортивных показателей'],
+      },
+    ],
+
+    // Partners
+    partnersTitle: 'НАШИ ПАРТНЁРЫ',
+
+    // Footer
+    footerDesc: 'Премиальное спортивное питание для атлетов Казахстана. Качество, проверенное временем.',
+    footerEmailPlaceholder: 'Ваш email',
+    footerSubscribe: 'Подписаться',
+    footerStores: 'Магазины',
+    footerAlmaty: 'Алматы — ул. Абая, 150',
+    footerHelp: 'Помощь',
+    footerHelpLinks: ['Каталог', 'О компании', 'Условия доставки', 'Оплата', 'Возврат'],
+    footerContacts: 'Контакты',
+    footerWorkdays: 'Пн–Пт: 9:00 – 21:00',
+    footerWeekend: 'Сб–Вс: 10:00 – 20:00',
+    footerCopy: '© 2026 Agym Nutrition Kazakhstan. Все права защищены.',
+
+    // Modal
+    modalTag: 'Оформление',
+    modalTitle: 'ОФОРМИТЬ',
+    modalTitleAccent: 'ЗАКАЗ',
+    modalName: 'Ваше имя',
+    modalNamePlaceholder: 'Александр',
+    modalPhone: 'Номер телефона',
+    modalSubmit: 'Заказать через WhatsApp',
+    modalWhatsappMsg: (product, name, phone) =>
+      `Привет! Хочу заказать "${product}".\nИмя: ${name}\nТелефон: ${phone}`,
+
+    // Contact button
+    contactBtn: 'Написать нам',
+
+    // Stores
+    stores: [
+      { address: 'ул. Тауке хана, 112 (ТЦ Аль-Фараби)', map: 'https://www.google.com/maps/search/?api=1&query=Шымкент+Тауке+хана+112' },
+      { address: 'пр. Кунаева, 21/1 (напротив Mega Planet)', map: 'https://www.google.com/maps/search/?api=1&query=Шымкент+Кунаева+21/1' },
+      { address: 'ул. Рыскулова, 45 (мкр. Север)', map: 'https://www.google.com/maps/search/?api=1&query=Шымкент+Рыскулова+45' },
+    ],
+  },
+
+  kz: {
+    navProducts: 'Тауарлар',
+    navAbout: 'Біз туралы',
+    navContacts: 'Байланыс',
+    navOrder: 'Тапсырыс',
+
+    announce: [
+      '10 000 ₸-дан тегін жеткізу',
+      'Жаңалық: Titan Whey Black Edition',
+      '3 тауардан тапсырыс берсеңіз — 20% жеңілдік',
+      'Gold\'s Gym ресми жеткізушісі',
+      'Қазақстан бойынша жұмыс істейміз',
+    ],
+
+    heroTag: 'Қазақстан • Шымкент',
+    heroSub: 'Спортшыларға арналған премиум тамақтану — RED EDITION 2.0. Әр серияда аяғына дейін баратындарға арналған отын.',
+    heroCta: 'Каталогты көру',
+    heroCtaContact: 'Байланыс',
+    stat1: 'жыл нарықта',
+    stat2: 'Шымкенттегі дүкен',
+    stat3: 'өнім',
+    stat4: 'қанағаттанған тұтынушы',
+
+    benefit1Title: 'Сапа кепілдігі',
+    benefit1Desc: 'ISO 22000 сертификатталған өнімдер',
+    benefit2Title: 'Жылдам нәтиже',
+    benefit2Desc: 'Клиникалық тексерілген формулалар',
+    benefit3Title: 'Табиғи құрам',
+    benefit3Desc: 'Зиянды қоспалар мен ГМО жоқ',
+    benefit4Title: 'Үздік бренд',
+    benefit4Desc: 'Кәсіби спортшылардың таңдауы',
+
+    scrollerTag: 'Барлық ассортимент',
+    scrollerTitle1: 'ТОЛЫҚ',
+    scrollerTitle2: 'ЖЕЛІ',
+    scrollHint: 'Свайп →',
+
+    certTag: 'Құжаттар',
+    certTitle1: 'БІЗДІҢ',
+    certTitle2: 'СЕРТИФИКАТТАР',
+    certItems: [
+      { title: 'Сертификат', accent: 'QUALITY', text: 'Сапа менеджменті жүйесі расталған.' },
+      { title: 'Сертификат', accent: 'CONTROL', text: 'Халықаралық сапа бақылау стандарты.' },
+      { title: 'Сертификат', accent: 'SAFETY', text: 'Азық-түлік өнімінің қауіпсіздік кепілдігі.' },
+      { title: 'Сертификат', accent: 'HACCP', text: 'Тәуекелдерді талдау және бақылау нүктелері.' },
+      { title: 'Сертификат', accent: 'ISO 22000', text: 'Азық-түлік қауіпсіздігін басқару жүйесі.' },
+      { title: 'Сертификат', accent: 'STANDARD', text: 'Әлемдік салалық стандарттарға сәйкестік.' },
+    ],
+
+    catalogTag: 'Хит өнімдер',
+    catalogTitle1: 'БІЗДІҢ',
+    catalogTitle2: 'КАТАЛОГ',
+    buyNow: 'Қазір сатып алу',
+    protein: 'Белок',
+    calories: 'Калория',
+    unitServ: 'порц.',
+    unitKcalServ: 'ккал/порц.',
+    // SVG Labels
+    svgProtein: 'БЕЛОК',
+    svgEnergy: 'ЭНЕРГИЯ',
+    svgCarbs: 'КӨМІРСУЛАР',
+    svgServings: 'ПОРЦИЯ',
+    svgMassGainer: 'МАССА ГЕЙНЕРІ',
+    svgPremiumWhey: 'ПРЕМИУМ ПРОТЕИН',
+    svgMuscleGrowth: 'БҰЛШЫҚЕТ ӨСУІ',
+    svgPerformance: 'КҮШ ПЕН ҚУАТ',
+    svgRecovery: 'ҚАЛПЫНА КЕЛУ',
+
+    products: [
+      {
+        type: 'МАССА ГЕЙНЕР',
+        subtitle: 'Сүт және сарысу белогынан жасалған ароматты протеинді сусын',
+        benefits: ['Бұлшықет массасын арттыру', 'Салмақты жылдам жинау', 'Белок пен көмірсу молшылығы', 'Бұлшықет күшін арттыру'],
+      },
+      {
+        type: 'ТАЗА МАССА',
+        subtitle: 'Сарысу, бұршақ және соя протеинінен жасалған ароматты сусын',
+        benefits: ['Бұлшықеттің оптималды өсуі', 'Көлем мен күшті арттыру', 'Спорттық нәтижені жақсарту', 'Анаболикалық қалпына келу'],
+      },
+      {
+        type: 'ҚАЛПЫНА КЕЛУ',
+        subtitle: 'Тармақталған тізбекті амин қышқылдары ұнтағы',
+        benefits: ['L-Лейцин, L-Изолейцин, L-Валин', 'Бұлшықет ауруын азайту', 'Белок синтезін ынталандыру', 'Бұлшықет өсуіне қолдау'],
+      },
+      {
+        type: 'КҮШ ЖӘНЕ ҚУА',
+        subtitle: 'Креатин моногидраты ұнтағы',
+        benefits: ['Жаттығудың алдында, кезінде және одан кейін', 'Күш пен қуатты арттыру', 'Фокус пен энергияны жақсарту', 'Спорттық көрсеткіштерді арттыру'],
+      },
+    ],
+
+    partnersTitle: 'БІЗДІҢ СЕРІКТЕСТЕР',
+
+    footerDesc: 'Қазақстандық спортшыларға арналған премиум спорттық тамақтану. Уақыт сынаған сапа.',
+    footerEmailPlaceholder: 'Email-іңіз',
+    footerSubscribe: 'Жазылу',
+    footerStores: 'Дүкендер',
+    footerAlmaty: 'Алматы — Абай к-сі, 150',
+    footerHelp: 'Көмек',
+    footerHelpLinks: ['Каталог', 'Компания туралы', 'Жеткізу шарттары', 'Төлем', 'Қайтару'],
+    footerContacts: 'Байланыс',
+    footerWorkdays: 'Дс–Жм: 9:00 – 21:00',
+    footerWeekend: 'Сс–Жс: 10:00 – 20:00',
+    footerCopy: '© 2026 Agym Nutrition Kazakhstan. Барлық құқықтар қорғалған.',
+
+    modalTag: 'Тапсырыс рәсімдеу',
+    modalTitle: 'ТАПСЫРЫС',
+    modalTitleAccent: 'РӘСІМДЕУ',
+    modalName: 'Атыңыз',
+    modalNamePlaceholder: 'Алмас',
+    modalPhone: 'Телефон нөміріңіз',
+    modalSubmit: 'WhatsApp арқылы тапсырыс беру',
+    modalWhatsappMsg: (product, name, phone) =>
+      `Сәлем! "${product}" тапсырыс бергім келеді.\nАты: ${name}\nТелефон: ${phone}`,
+
+    contactBtn: 'Бізге жазыңыз',
+
+    stores: [
+      { address: 'Тәуке хан к-сі, 112 (Әл-Фараби СО)', map: 'https://www.google.com/maps/search/?api=1&query=Шымкент+Тауке+хана+112' },
+      { address: 'Қонаев д-лы, 21/1 (Mega Planet-тің қарсысында)', map: 'https://www.google.com/maps/search/?api=1&query=Шымкент+Кунаева+21/1' },
+      { address: 'Рысқұлов к-сі, 45 (Солтүстік шағынауданы)', map: 'https://www.google.com/maps/search/?api=1&query=Шымкент+Рыскулова+45' },
+    ],
+  },
+
+  en: {
+    navProducts: 'Products',
+    navAbout: 'About',
+    navContacts: 'Contacts',
+    navOrder: 'Order',
+
+    announce: [
+      'Free delivery from 10,000 ₸',
+      'New: Titan Whey Black Edition',
+      '20% off when ordering 3+ items',
+      'Official Gold\'s Gym supplier',
+      'Delivery across Kazakhstan',
+    ],
+
+    heroTag: 'Kazakhstan • Shymkent',
+    heroSub: 'Premium sports nutrition — RED EDITION 2.0. Fuel for those who go all the way in every set.',
+    heroCta: 'View catalog',
+    heroCtaContact: 'Contacts',
+    stat1: 'years on market',
+    stat2: 'stores in Shymkent',
+    stat3: 'products',
+    stat4: 'happy customers',
+
+    benefit1Title: 'Quality Guarantee',
+    benefit1Desc: 'ISO 22000 certified products',
+    benefit2Title: 'Fast Results',
+    benefit2Desc: 'Clinically proven formulas',
+    benefit3Title: 'Natural Ingredients',
+    benefit3Desc: 'No harmful additives or GMO',
+    benefit4Title: 'Top Brand',
+    benefit4Desc: 'Choice of professional athletes',
+
+    scrollerTag: 'Full range',
+    scrollerTitle1: 'COMPLETE',
+    scrollerTitle2: 'LINEUP',
+    scrollHint: 'Swipe →',
+
+    certTag: 'Documents',
+    certTitle1: 'OUR',
+    certTitle2: 'CERTIFICATES',
+    certItems: [
+      { title: 'Certificate', accent: 'QUALITY', text: 'Certified quality management system.' },
+      { title: 'Certificate', accent: 'CONTROL', text: 'International quality control standard.' },
+      { title: 'Certificate', accent: 'SAFETY', text: 'Food safety guarantee.' },
+      { title: 'Certificate', accent: 'HACCP', text: 'Hazard analysis and critical control points.' },
+      { title: 'Certificate', accent: 'ISO 22000', text: 'Food safety management system.' },
+      { title: 'Certificate', accent: 'STANDARD', text: 'Compliance with global industry standards.' },
+    ],
+
+    catalogTag: 'Best sellers',
+    catalogTitle1: 'OUR',
+    catalogTitle2: 'CATALOG',
+    buyNow: 'Buy now',
+    protein: 'Protein',
+    calories: 'Calories',
+    unitServ: 'servings',
+    unitKcalServ: 'kcal/serv',
+    // SVG Labels
+    svgProtein: 'PROTEIN',
+    svgEnergy: 'ENERGY',
+    svgCarbs: 'CARBS',
+    svgServings: 'SERVINGS',
+    svgMassGainer: 'MASS GAINER',
+    svgPremiumWhey: 'PREMIUM PROTEIN',
+    svgMuscleGrowth: 'MUSCLE GROWTH',
+    svgPerformance: 'PERFORMANCE',
+    svgRecovery: 'RECOVERY',
+
+    products: [
+      {
+        type: 'MASS GAINER',
+        subtitle: 'Mixed Protein Flavoured Drink derived from Milk and Whey',
+        benefits: ['Increase Muscle Mass', 'Rapid Weight Gain', 'Rich Protein And Carbs', 'Improve Muscle Strength'],
+      },
+      {
+        type: 'LEAN MUSCLE',
+        subtitle: 'Mixed Protein Flavoured Drink derived from Whey, Pea and Soy',
+        benefits: ['Optimum Muscle Growth', 'Increase Size & Strength', 'Improve Athletic Performance', 'Boost Anabolic Muscle Recovery'],
+      },
+      {
+        type: 'MUSCLE RECOVERY',
+        subtitle: 'Branched Chain Amino Acid Powder',
+        benefits: ['L-Leucine, L-Isoleucine, L-Valine', 'Reduce Muscle Soreness', 'Stimulate Muscle Protein Synthesis', 'Support Muscle Growth'],
+      },
+      {
+        type: 'MUSCLE PERFORMANCE',
+        subtitle: 'Creatine Monohydrate Powder',
+        benefits: ['Pre-Intra-Post Workout', 'Improve Muscle Strength and Power', 'Improve Focus and Energy', 'Enhance Athletic Performance'],
+      },
+    ],
+
+    partnersTitle: 'OUR PARTNERS',
+
+    footerDesc: 'Premium sports nutrition for athletes in Kazakhstan. Quality proven by time.',
+    footerEmailPlaceholder: 'Your email',
+    footerSubscribe: 'Subscribe',
+    footerStores: 'Stores',
+    footerAlmaty: 'Almaty — Abay St., 150',
+    footerHelp: 'Help',
+    footerHelpLinks: ['Catalog', 'About company', 'Delivery terms', 'Payment', 'Returns'],
+    footerContacts: 'Contacts',
+    footerWorkdays: 'Mon–Fri: 9:00 – 21:00',
+    footerWeekend: 'Sat–Sun: 10:00 – 20:00',
+    footerCopy: '© 2026 Agym Nutrition Kazakhstan. All rights reserved.',
+
+    modalTag: 'Checkout',
+    modalTitle: 'PLACE',
+    modalTitleAccent: 'ORDER',
+    modalName: 'Your name',
+    modalNamePlaceholder: 'Alexander',
+    modalPhone: 'Phone number',
+    modalSubmit: 'Order via WhatsApp',
+    modalWhatsappMsg: (product, name, phone) =>
+      `Hello! I'd like to order "${product}".\nName: ${name}\nPhone: ${phone}`,
+
+    contactBtn: 'Contact us',
+
+    stores: [
+      { address: '112 Tauke Khan St. (Al-Farabi Mall)', map: 'https://www.google.com/maps/search/?api=1&query=Шымкент+Тауке+хана+112' },
+      { address: '21/1 Kunayev Ave. (opposite Mega Planet)', map: 'https://www.google.com/maps/search/?api=1&query=Шымкент+Кунаева+21/1' },
+      { address: '45 Ryskulov St. (North district)', map: 'https://www.google.com/maps/search/?api=1&query=Шымкент+Рыскулова+45' },
+    ],
+  },
+}
+
+// ============================================================
+// BASE PRODUCT DATA (language-independent)
+// ============================================================
+const PRODUCTS_BASE = [
+  {
+    id: 1,
+    name: 'TITAN MASS-Z',
+    shortType: 'MASS',
+    protein: '11g', carbs: '80.3g', fat: '1.1g', calories: '375 kcal',
+    servings: '20',
+    bgColor: '#c0000a', bagColor: '#d32f2f', labelBg: '#8b0000',
+    priceOld: 12500, price: 9900,
+    packageType: 'bag',
+  },
+  {
+    id: 2,
+    name: 'TITAN WHEY-Z',
+    shortType: 'WHEY',
+    protein: '22g', carbs: '7g', fat: '0.3g', calories: '118 kcal',
+    servings: '60',
+    bgColor: '#0d1b2e', bagColor: '#1a2f4a', labelBg: '#0a1520',
+    priceOld: 10900, price: 8500,
+    packageType: 'bag+tub',
+  },
+  {
+    id: 3,
+    name: '2:1:1 BCAA',
+    shortType: 'BCAA',
+    protein: '0.7g', carbs: '8.3g', fat: '0g', calories: '36 kcal',
+    servings: '20',
+    bgColor: '#2d0057', bagColor: '#6a0dad', labelBg: '#4a0080',
+    priceOld: 6900, price: 4900,
+    packageType: 'tub',
+  },
+  {
+    id: 4,
+    name: 'CREATINE MONOHYDRATE',
+    shortType: 'CREA',
+    protein: '7g', carbs: '0g', fat: '0g', calories: '28 kcal',
+    servings: '40',
+    bgColor: '#1a1400', bagColor: '#333', labelBg: '#222',
+    accentGold: '#c9a84c',
+    priceOld: 5900, price: 3900,
+    packageType: 'tub',
+  },
 ]
 
-const SHYMKENT_STORES = [
-  { address: "ул. Тауке хана, 112 (ТЦ Аль-Фараби)", map: "https://www.google.com/maps/search/?api=1&query=Шымкент+Тауке+хана+112" },
-  { address: "пр. Кунаева, 21/1 (напротив Mega Planet)", map: "https://www.google.com/maps/search/?api=1&query=Шымкент+Кунаева+21/1" },
-  { address: "ул. Рыскулова, 45 (мкр. Север)", map: "https://www.google.com/maps/search/?api=1&query=Шымкент+Рыскулова+45" }
+const CERT_IMGS = [
+  '/assets/certificates/file-001.png',
+  '/assets/certificates/file-001 copy.png',
+  '/assets/certificates/file-001 copy 2.png',
+  '/assets/certificates/file-001 copy 3.png',
+  '/assets/certificates/file-001 copy 4.png',
+  '/assets/certificates/file-001 copy 5.png',
 ]
 
-// --- Components ---
+const PARTNERS = ["Gold's Gym", 'World Class', 'Invictus', 'FitNation', 'Olympic']
 
-const Header = ({ isMenuOpen, setIsMenuOpen, isScrolled }) => (
-  <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
-    <nav className="container nav">
-      <div className="logo">AGYM<span className="accent-text">POWER</span></div>
-      
-      {/* Desktop Links */}
-      <div className="header-links desktop-only">
-        <a href="#catalog" className="nav-link-simple">Товары</a>
-        <a href="#about" className="nav-link-simple">О нас</a>
-        <a href="#contacts" className="nav-link-simple">Контакты</a>
-      </div>
+// ============================================================
+// LANGUAGE CONTEXT
+// ============================================================
+const LangContext = React.createContext('ru')
+const useLang = () => React.useContext(LangContext)
 
-      {/* Mobile Menu Toggle */}
-      <button 
-        className="mobile-menu-btn" 
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        aria-label="Toggle menu"
+// ============================================================
+// LANGUAGE SWITCHER — shown inside header
+// ============================================================
+const LangSwitcher = ({ lang, setLang }) => (
+  <div className="lang-switcher">
+    {['ru', 'kz', 'en'].map(l => (
+      <button
+        key={l}
+        className={`lang-btn${lang === l ? ' active' : ''}`}
+        onClick={() => setLang(l)}
+        aria-label={l.toUpperCase()}
       >
-        {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+        {l.toUpperCase()}
       </button>
-
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div 
-            className="mobile-menu"
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          >
-            <div className="mobile-menu-links">
-              <a href="#catalog" onClick={() => setIsMenuOpen(false)}>Товары</a>
-              <a href="#about" onClick={() => setIsMenuOpen(false)}>О нас</a>
-              <a href="#contacts" onClick={() => setIsMenuOpen(false)}>Контакты</a>
-              <a href="https://wa.me/77001112233" className="btn" style={{ marginTop: '2rem' }}>Заказать</a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
-  </header>
+    ))}
+  </div>
 )
 
-const Hero = () => (
-  <section className="hero">
-    <div className="hero-bg-text">AGYM</div>
-    <motion.div 
-      className="container hero-content"
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8 }}
-    >
-      <div className="hero-text-wrap">
-        <motion.h1 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          СТАНЬ <br className="mobile-only" /> <span className="accent-text">СИЛЬНЕЕ</span>
-        </motion.h1>
-        <motion.p 
-          className="hero-subtitle"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+// ============================================================
+// ANNOUNCEMENT BAR
+// ============================================================
+const AnnouncementBar = () => {
+  const lang = useLang()
+  const items = T[lang].announce
+  const content = [...items, ...items].map((text, i) => (
+    <React.Fragment key={i}>
+      <span>{text}</span>
+      <span className="marquee-sep">•</span>
+    </React.Fragment>
+  ))
+  return (
+    <div className="announcement-bar">
+      <div className="marquee-track">
+        <div className="marquee-content">{content}</div>
+        <div className="marquee-content" aria-hidden="true">{content}</div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================================
+// HEADER
+// ============================================================
+const Header = ({ isMenuOpen, setIsMenuOpen, isScrolled, lang, setLang }) => {
+  const t = T[lang]
+  return (
+    <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
+      <nav className="container nav">
+        {/* Left Nav */}
+        <div className="header-links desktop-only">
+          <a href="#catalog" className="nav-link-simple">{t.navProducts}</a>
+          <a href="#contacts" className="nav-link-simple">{t.navContacts}</a>
+        </div>
+
+        {/* Center Logo */}
+        <div className="logo">AGYM<span className="accent-text">POWER</span></div>
+
+        {/* Right Icons */}
+        <div className="header-icons">
+          <LangSwitcher lang={lang} setLang={setLang} />
+          <button className="icon-btn desktop-only" aria-label="Search"><Search size={18} /></button>
+          <button className="icon-btn desktop-only" aria-label="Cart"><ShoppingBag size={18} /></button>
+          <button
+            className="mobile-menu-btn"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              className="mobile-menu"
+              initial={{ opacity: 0, x: '100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+            >
+              <div className="mobile-menu-links">
+                <a href="#catalog" onClick={() => setIsMenuOpen(false)}>{t.navProducts}</a>
+                <a href="#contacts" onClick={() => setIsMenuOpen(false)}>{t.navContacts}</a>
+                <a href="https://wa.me/77001112233" className="btn" style={{ marginTop: '1.5rem' }}>
+                  {t.navOrder}
+                </a>
+                <div style={{ marginTop: '2rem' }}>
+                  <LangSwitcher lang={lang} setLang={setLang} />
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+    </header>
+  )
+}
+
+// ============================================================
+// HERO
+// ============================================================
+const Hero = () => {
+  const lang = useLang()
+  const t = T[lang]
+  return (
+    <section className="hero">
+      <div className="hero-bg-text">AGYM</div>
+      <motion.div
+        className="container hero-content"
+        initial={{ opacity: 0, y: 60 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <span className="section-title-sm">{t.heroTag}</span>
+        <motion.h1
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          №1 Малайзийский бренд спортивного питания в Казахстане. Алматы и Шымкент. Доставка за 24 часа.
-        </motion.p>
-        <motion.a 
-          href="#catalog" 
-          className="btn hero-btn"
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          Смотреть каталог <ArrowRight size={20} />
-        </motion.a>
-      </div>
-    </motion.div>
-  </section>
-)
+          AGYM<br /><span className="accent-text">POWER</span>
+        </motion.h1>
 
+        <motion.p
+          className="hero-subtitle"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          {t.heroSub}
+        </motion.p>
+
+        <motion.div
+          style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+        >
+          <a href="#catalog" className="btn">{t.heroCta} <ArrowRight size={18} /></a>
+          <a href="#contacts" className="btn btn-outline">{t.heroCtaContact}</a>
+        </motion.div>
+
+        <motion.div
+          style={{ display: 'flex', gap: '3rem', marginTop: '4rem', flexWrap: 'wrap' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+        >
+          {[['5+', t.stat1], ['3', t.stat2], ['50+', t.stat3], ['1000+', t.stat4]].map(([num, label]) => (
+            <div key={label} style={{ borderLeft: '2px solid #d32f2f', paddingLeft: '1.2rem' }}>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.2rem', lineHeight: 1, color: '#fff', letterSpacing: '2px' }}>{num}</div>
+              <div style={{ fontSize: '0.75rem', color: '#aaa', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '0.3rem' }}>{label}</div>
+            </div>
+          ))}
+        </motion.div>
+      </motion.div>
+    </section>
+  )
+}
+
+// ============================================================
+// DOT
+// ============================================================
+const Dot = ({ progress, target }) => {
+  const width = useTransform(progress, [target - 0.25, target, target + 0.25], [8, 24, 8])
+  const opacity = useTransform(progress, [target - 0.25, target, target + 0.25], [0.3, 1, 0.3])
+  return (
+    <motion.span style={{ width, opacity, backgroundColor: '#d32f2f', borderRadius: 10, height: 8, display: 'inline-block' }} />
+  )
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+const formatUnit = (val, lang) => {
+  if (!val) return ''
+  if (lang === 'en') return val
+  return val.replace('g', 'г').replace('kcal', 'ккал')
+}
+
+// ============================================================
+// PRODUCT VISUAL SVG
+// ============================================================
+const ProductVisual = ({ product }) => {
+  const lang = useLang()
+  const t = T[lang]
+  const isBag = product.packageType === 'bag' || product.packageType === 'bag+tub'
+  const isTub = product.packageType === 'tub' || product.packageType === 'bag+tub'
+
+  if (isBag && !isTub) {
+    return (
+      <svg viewBox="0 0 200 280" style={{ width: '100%', height: '100%', maxHeight: '220px' }}>
+        <defs>
+          <linearGradient id={`bagGrad${product.id}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor={product.bagColor} />
+            <stop offset="100%" stopColor={product.labelBg} />
+          </linearGradient>
+        </defs>
+        <rect x="20" y="30" width="160" height="230" rx="12" fill={`url(#bagGrad${product.id})`} />
+        <rect x="20" y="20" width="160" height="20" rx="4" fill="#111" />
+        <rect x="60" y="22" width="80" height="4" rx="2" fill="#333" />
+        <rect x="28" y="70" width="144" height="150" rx="6" fill={product.labelBg} opacity="0.7" />
+        <text x="100" y="98" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="bold" fontFamily="Arial" letterSpacing="2">▲ AGYM</text>
+        <text x="100" y="128" textAnchor="middle" fill="#ffffff" fontSize="22" fontWeight="900" fontFamily="Arial" letterSpacing="1">TITAN</text>
+        <text x="100" y="155" textAnchor="middle" fill="#ffffff" fontSize="20" fontWeight="900" fontFamily="Arial">MASS-Z</text>
+        <text x="100" y="174" textAnchor="middle" fill="#ffaaaa" fontSize="7" fontFamily="Arial" letterSpacing="1">{t.svgMassGainer}</text>
+        <rect x="40" y="182" width="120" height="2" fill="#ff0000" />
+        <text x="65" y="200" textAnchor="middle" fill="#fff" fontSize="9" fontFamily="Arial" fontWeight="bold">{formatUnit(product.protein, lang)}</text>
+        <text x="65" y="210" textAnchor="middle" fill="#aaa" fontSize="6" fontFamily="Arial">{t.svgProtein}</text>
+        <text x="100" y="200" textAnchor="middle" fill="#fff" fontSize="9" fontFamily="Arial" fontWeight="bold">{formatUnit(product.calories, lang)}</text>
+        <text x="100" y="210" textAnchor="middle" fill="#aaa" fontSize="6" fontFamily="Arial">{t.svgEnergy}</text>
+        <text x="138" y="200" textAnchor="middle" fill="#fff" fontSize="9" fontFamily="Arial" fontWeight="bold">{product.servings}</text>
+        <text x="138" y="210" textAnchor="middle" fill="#aaa" fontSize="6" fontFamily="Arial">{t.svgServings}</text>
+      </svg>
+    )
+  }
+
+  if (product.packageType === 'bag+tub') {
+    return (
+      <svg viewBox="0 0 240 260" style={{ width: '100%', height: '100%', maxHeight: '220px' }}>
+        <defs>
+          <linearGradient id={`wheyGrad${product.id}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor={product.bagColor} />
+            <stop offset="100%" stopColor="#060e1a" />
+          </linearGradient>
+        </defs>
+        <rect x="10" y="20" width="130" height="210" rx="10" fill={`url(#wheyGrad${product.id})`} />
+        <rect x="10" y="12" width="130" height="16" rx="4" fill="#080f1c" />
+        <rect x="10" y="82" width="130" height="130" rx="4" fill="#0a1828" opacity="0.7" />
+        <text x="75" y="108" textAnchor="middle" fill="#ccc" fontSize="9" fontFamily="Arial" letterSpacing="2">▲ AGYM</text>
+        <text x="75" y="134" textAnchor="middle" fill="#fff" fontSize="18" fontWeight="900" fontFamily="Arial">TITAN</text>
+        <text x="75" y="156" textAnchor="middle" fill="#e87722" fontSize="16" fontWeight="900" fontFamily="Arial">WHEY-Z</text>
+        <text x="75" y="170" textAnchor="middle" fill="#999" fontSize="6" fontFamily="Arial">{t.svgPremiumWhey}</text>
+        <rect x="30" y="178" width="90" height="1.5" fill="#e87722" />
+        <text x="55" y="192" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="bold" fontFamily="Arial">{formatUnit(product.protein, lang)}</text>
+        <text x="55" y="200" textAnchor="middle" fill="#888" fontSize="5" fontFamily="Arial">{t.svgProtein}</text>
+        <text x="80" y="192" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="bold" fontFamily="Arial">{formatUnit(product.carbs, lang)}</text>
+        <text x="80" y="200" textAnchor="middle" fill="#888" fontSize="5" fontFamily="Arial">{t.svgCarbs}</text>
+        <text x="105" y="192" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="bold" fontFamily="Arial">{product.servings}</text>
+        <text x="105" y="200" textAnchor="middle" fill="#888" fontSize="5" fontFamily="Arial">{t.svgServings}</text>
+        <ellipse cx="185" cy="85" rx="42" ry="12" fill="#0a2040" />
+        <rect x="143" y="85" width="84" height="120" fill="#0d2444" />
+        <ellipse cx="185" cy="205" rx="42" ry="12" fill="#091c38" />
+        <rect x="143" y="100" width="84" height="80" fill="#0d264e" />
+        <text x="185" y="128" textAnchor="middle" fill="#ccc" fontSize="6" fontFamily="Arial" letterSpacing="1">▲ AGYM</text>
+        <text x="185" y="148" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="Arial">TITAN</text>
+        <text x="185" y="164" textAnchor="middle" fill="#e87722" fontSize="10" fontWeight="900" fontFamily="Arial">WHEY-Z</text>
+        <rect x="155" y="170" width="60" height="1" fill="#e87722" />
+        <text x="185" y="180" textAnchor="middle" fill="#888" fontSize="5" fontFamily="Arial">MUSCLE GROWTH</text>
+      </svg>
+    )
+  }
+
+  // Tub (BCAA or Creatine)
+  const isCreatine = product.id === 4
+  const tubColor = isCreatine ? '#1c1c1c' : '#3d1a6e'
+  const lidColor = isCreatine ? '#111' : '#2d1050'
+  const labelColor = isCreatine ? '#c9a84c' : '#a855f7'
+  return (
+    <svg viewBox="0 0 200 260" style={{ width: '100%', height: '100%', maxHeight: '220px' }}>
+      <defs>
+        <linearGradient id={`tubGrad${product.id}`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor={tubColor} />
+          <stop offset="50%" stopColor={isCreatine ? '#2a2a2a' : '#5a1a9e'} />
+          <stop offset="100%" stopColor={tubColor} />
+        </linearGradient>
+      </defs>
+      <ellipse cx="100" cy="55" rx="72" ry="18" fill={lidColor} />
+      <ellipse cx="100" cy="48" rx="70" ry="14" fill={isCreatine ? '#1a1a1a' : '#38106a'} />
+      <rect x="28" y="55" width="144" height="160" fill={`url(#tubGrad${product.id})`} />
+      <ellipse cx="100" cy="215" rx="72" ry="18" fill={tubColor} />
+      <rect x="35" y="72" width="130" height="130" rx="4" fill="#f5f5f5" />
+      <text x="100" y="100" textAnchor="middle" fill={isCreatine ? '#111' : '#3d008a'} fontSize="10" fontWeight="bold" fontFamily="Arial" letterSpacing="2">▲ AGYM</text>
+      <rect x="40" y="104" width="120" height="2" fill={labelColor} />
+      {isCreatine ? (
+        <>
+          <text x="100" y="130" textAnchor="middle" fill="#111" fontSize="16" fontWeight="900" fontFamily="Arial">CREATINE</text>
+          <text x="100" y="150" textAnchor="middle" fill="#111" fontSize="14" fontWeight="900" fontFamily="Arial">MONOHYDRATE</text>
+          <rect x="40" y="158" width="120" height="2" fill={labelColor} />
+          <text x="100" y="170" textAnchor="middle" fill={labelColor} fontSize="7" fontFamily="Arial" letterSpacing="1">{t.svgPerformance}</text>
+          <text x="100" y="184" textAnchor="middle" fill="#555" fontSize="6" fontFamily="Arial">{formatUnit(product.protein, lang)} {t.svgProtein} • {product.servings} {t.svgServings}</text>
+        </>
+      ) : (
+        <>
+          <text x="100" y="122" textAnchor="middle" fill="#111" fontSize="26" fontWeight="900" fontFamily="Arial">2:1:1</text>
+          <text x="100" y="152" textAnchor="middle" fill="#3d008a" fontSize="24" fontWeight="900" fontFamily="Arial">BCAA</text>
+          <text x="100" y="166" textAnchor="middle" fill="#555" fontSize="7" fontFamily="Arial">BRANCHED CHAIN AMINO ACIDS</text>
+          <rect x="40" y="172" width="120" height="1.5" fill={labelColor} />
+          <text x="100" y="182" textAnchor="middle" fill="#555" fontSize="6" fontFamily="Arial">{product.servings} {t.svgServings}</text>
+          <text x="100" y="194" textAnchor="middle" fill="#333" fontSize="6" fontFamily="Arial">{t.svgRecovery} • {t.svgMuscleGrowth}</text>
+        </>
+      )}
+      <text x="70" y="240" textAnchor="middle" fill="#fff" fontSize="8" fontFamily="Arial" fontWeight="bold">{formatUnit(product.calories, lang)}</text>
+      <text x="100" y="240" textAnchor="middle" fill="#fff" fontSize="8" fontFamily="Arial" fontWeight="bold">{formatUnit(product.protein, lang)}</text>
+      <text x="130" y="240" textAnchor="middle" fill="#fff" fontSize="8" fontFamily="Arial" fontWeight="bold">{product.servings}</text>
+    </svg>
+  )
+}
+
+// ============================================================
+// PRODUCT SCROLLER
+// ============================================================
 const ProductScroller = ({ onOrder }) => {
+  const lang = useLang()
+  const t = T[lang]
   const containerRef = React.useRef(null)
   const { scrollXProgress } = useScroll({ container: containerRef })
 
+  const scroll = (dir) => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: dir === 'left' ? -380 : 380, behavior: 'smooth' })
+    }
+  }
+
+  const products = PRODUCTS_BASE.map((p, i) => ({ ...p, ...T[lang].products[i] }))
+
   return (
     <section id="new" className="scroller-section">
-      <motion.div 
+      <motion.div
         className="container"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, margin: '-80px' }}
       >
-        <h2 className="section-title">ПОЛНАЯ <span className="accent-text">ЛИНЕЙКА</span></h2>
-        <div style={{ position: 'relative' }}>
-          <div className="scroll-hint">Листайте вправо →</div>
-          <div 
-            className="scroller-container" 
-            ref={containerRef}
-          >
-            {PRODUCTS.map(item => (
-              <motion.div 
-                key={item.id} 
+        <span className="section-title-sm">{t.scrollerTag}</span>
+        <h2 className="section-title">
+          {t.scrollerTitle1}<br /><span className="accent-text">{t.scrollerTitle2}</span>
+        </h2>
+
+        <div className="scroller-wrapper">
+          <button className="scroll-btn prev" onClick={() => scroll('left')} aria-label="Previous"><ChevronLeft size={22} /></button>
+          <button className="scroll-btn next" onClick={() => scroll('right')} aria-label="Next"><ChevronRight size={22} /></button>
+
+          <div className="scroll-hint">{t.scrollHint}</div>
+          <div className="scroller-container" ref={containerRef}>
+            {products.map(item => (
+              <motion.div
+                key={item.id}
                 className="scroller-card"
-                whileHover={{ y: -10 }}
+                whileHover={{ y: -8 }}
                 onClick={() => onOrder(item.name)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', minWidth: '300px' }}
               >
-                <div className="product-img" style={{ background: item.color }}>{item.type}</div>
+                <div className="card-badge">Sale!</div>
+                <div
+                  className="product-img"
+                  style={{ background: `linear-gradient(160deg, ${item.bgColor} 0%, #0a0a0a 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
+                >
+                  <ProductVisual product={item} />
+                </div>
+                <div className="card-type">{item.type}</div>
                 <h3>{item.name}</h3>
-                <p style={{ fontSize: '0.9rem', color: '#666' }}>Доступно к заказу</p>
-                <button className="btn" style={{ width: '100%', marginTop: '1rem', padding: '0.5rem' }}>Заказать</button>
+                <p style={{ fontSize: '0.75rem', color: '#777', marginBottom: '0.6rem', lineHeight: 1.4 }}>{item.subtitle}</p>
+                <div className="card-price-row">
+                  {/* Prices temporarily hidden */}
+                </div>
+                <button className="btn" style={{ width: '100%', padding: '10px', fontSize: '0.78rem' }}>{t.buyNow}</button>
               </motion.div>
             ))}
           </div>
-          
+
           <div className="scroll-dots">
-            {[0, 0.5, 1].map((target, i) => (
+            {[0, 0.25, 0.75, 1].map((target, i) => (
               <Dot key={i} progress={scrollXProgress} target={target} />
             ))}
           </div>
@@ -155,50 +823,48 @@ const ProductScroller = ({ onOrder }) => {
   )
 }
 
-const Dot = ({ progress, target }) => {
-  const width = useTransform(progress, [target - 0.25, target, target + 0.25], [8, 24, 8])
-  const opacity = useTransform(progress, [target - 0.25, target, target + 0.25], [0.2, 1, 0.2])
-  const backgroundColor = useTransform(progress, [target - 0.25, target, target + 0.25], ["#eee", "var(--primary)", "#eee"])
-
-  return (
-    <motion.span 
-      style={{ width, opacity, backgroundColor, borderRadius: 10, height: 8 }}
-    />
-  )
-}
-
-const Benefits = ({ onViewCertificate }) => {
+// ============================================================
+// CERTIFICATES
+// ============================================================
+const Certificates = ({ onViewCertificate }) => {
+  const lang = useLang()
+  const t = T[lang]
   const containerRef = React.useRef(null)
   const { scrollXProgress } = useScroll({ container: containerRef })
 
+  const scroll = (dir) => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: dir === 'left' ? -350 : 350, behavior: 'smooth' })
+    }
+  }
+
+  const certs = t.certItems.map((item, i) => ({ ...item, img: CERT_IMGS[i] }))
+
   return (
     <section className="benefits-section">
-      <motion.div 
+      <motion.div
         className="container"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
+        style={{ position: 'relative' }}
       >
-        <h2 className="section-title" style={{ textAlign: 'center', marginBottom: '4rem' }}>НАШИ <span className="accent-text">СЕРТИФИКАТЫ</span></h2>
-        
-        <div style={{ position: 'relative' }}>
-          <div className="scroll-hint">Листайте вправо →</div>
-          <div 
-            className="scroller-container certificates-scroller" 
-            ref={containerRef}
-          >
-            {[
-              { img: "/assets/certificates/file-001.png", title: "Сертификат", accent: "QUALITY", text: "Подтвержденная система менеджмента качества." },
-              { img: "/assets/certificates/file-001 copy.png", title: "Сертификат", accent: "CONTROL", text: "Международный стандарт контроля качества." },
-              { img: "/assets/certificates/file-001 copy 2.png", title: "Сертификат", accent: "SAFETY", text: "Гарантия безопасности пищевой продукции." },
-              { img: "/assets/certificates/file-001 copy 3.png", title: "Сертификат", accent: "HACCP", text: "Анализ рисков и критические контрольные точки." },
-              { img: "/assets/certificates/file-001 copy 4.png", title: "Сертификат", accent: "ISO 22000", text: "Система менеджмента безопасности пищепродуктов." },
-              { img: "/assets/certificates/file-001 copy 5.png", title: "Сертификат", accent: "STANDARD", text: "Соответствие мировым отраслевым стандартам." }
-            ].map((item, i) => (
-              <motion.div 
-                key={i} 
+        <span className="section-title-sm">{t.certTag}</span>
+        <h2 className="section-title" style={{ textAlign: 'center' }}>
+          {t.certTitle1}<br /><span className="accent-text">{t.certTitle2}</span>
+        </h2>
+
+        <div className="scroller-wrapper">
+          <button className="scroll-btn prev" onClick={() => scroll('left')} aria-label="Previous"><ChevronLeft size={22} /></button>
+          <button className="scroll-btn next" onClick={() => scroll('right')} aria-label="Next"><ChevronRight size={22} /></button>
+
+          <div className="scroll-hint">{t.scrollHint}</div>
+          <div className="scroller-container certificates-scroller" ref={containerRef}>
+            {certs.map((item, i) => (
+              <motion.div
+                key={i}
                 className="scroller-card certificate-item"
-                initial={{ opacity: 0, x: 50 }}
+                initial={{ opacity: 0, x: 40 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
@@ -208,53 +874,81 @@ const Benefits = ({ onViewCertificate }) => {
                 <div className="certificate-img-container">
                   <img src={item.img} alt={item.title} className="certificate-img" />
                 </div>
-                <h3>{item.title} <br/><span className="accent-text" style={{ fontSize: '0.8rem' }}>{item.accent}</span></h3>
-                <p style={{ fontSize: '0.85rem' }}>{item.text}</p>
+                <h3>{item.title}<br /><span className="accent-text" style={{ fontSize: '0.8rem' }}>{item.accent}</span></h3>
+                <p>{item.text}</p>
               </motion.div>
             ))}
           </div>
+        </div>
 
-          <div className="scroll-dots">
-            {[0, 0.5, 1].map((target, i) => (
-              <Dot key={i} progress={scrollXProgress} target={target} />
-            ))}
-          </div>
+        <div className="scroll-dots">
+          {[0, 0.5, 1].map((target, i) => (
+            <Dot key={i} progress={scrollXProgress} target={target} />
+          ))}
         </div>
       </motion.div>
     </section>
   )
 }
 
-const WhyUs = () => null // Removed text as requested
-
+// ============================================================
+// CATALOG / TOP PICKS
+// ============================================================
 const TopPicks = ({ onOrder }) => {
-  const topFive = PRODUCTS.slice(0, 5)
+  const lang = useLang()
+  const t = T[lang]
+  const products = PRODUCTS_BASE.map((p, i) => ({ ...p, ...T[lang].products[i] }))
 
   return (
     <section id="catalog" className="catalog-section">
-      <motion.div 
+      <motion.div
         className="container"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
       >
-        <h2 className="section-title">ТОП <span className="accent-text">ВЫБОР</span></h2>
-        <div className="catalog-grid">
-          {topFive.map((p, idx) => (
-            <motion.div 
-              key={p.id} 
+        <span className="section-title-sm">{t.catalogTag}</span>
+        <h2 className="section-title">
+          {t.catalogTitle1}<br /><span className="accent-text">{t.catalogTitle2}</span>
+        </h2>
+        <div className="catalog-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+          {products.map((p, idx) => (
+            <motion.div
+              key={p.id}
               className="product-card"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
               onClick={() => onOrder(p.name)}
               style={{ cursor: 'pointer' }}
             >
-              <div className="product-img" style={{ background: p.color, height: '200px' }}>{p.type}</div>
+              <div className="card-badge">Sale!</div>
+              <div
+                className="product-img"
+                style={{ background: `linear-gradient(160deg, ${p.bgColor} 0%, #0a0a0a 100%)`, height: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.2rem' }}
+              >
+                <ProductVisual product={p} />
+              </div>
+              <div className="card-type" style={{ marginTop: '1rem' }}>{p.type}</div>
               <h3 className="product-title">{p.name}</h3>
-              <p className="product-desc">Премиальное качество.</p>
-              <button className="btn" style={{ width: '100%', marginTop: '1rem' }}>Заказать</button>
+              <p style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.5rem', lineHeight: 1.5 }}>{p.subtitle}</p>
+              <ul style={{ listStyle: 'none', marginBottom: '1rem' }}>
+                {p.benefits.slice(0, 3).map((b, bi) => (
+                  <li key={bi} style={{ fontSize: '0.75rem', color: '#999', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.25rem' }}>
+                    <span style={{ color: '#d32f2f', fontWeight: 700, flexShrink: 0 }}>—</span> {b}
+                  </li>
+                ))}
+              </ul>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem', fontSize: '0.72rem', color: '#555' }}>
+                <span>{t.protein}: <strong style={{ color: '#aaa' }}>{formatUnit(p.protein, lang)}/{t.unitServ}</strong></span>
+                <span>{t.calories}: <strong style={{ color: '#aaa' }}>{p.calories.split(' ')[0]} {t.unitKcalServ}</strong></span>
+                <span style={{ color: '#aaa' }}>{p.servings} {t.unitServ}</span>
+              </div>
+              <div className="card-price-row" style={{ marginBottom: '0.8rem' }}>
+                {/* Prices temporarily hidden */}
+              </div>
+              <button className="btn" style={{ width: '100%' }}>{t.buyNow}</button>
             </motion.div>
           ))}
         </div>
@@ -263,87 +957,153 @@ const TopPicks = ({ onOrder }) => {
   )
 }
 
-const Partners = () => (
-  <section className="partners-section">
-    <div className="container">
-      <h2 className="section-title" style={{ textAlign: 'center', marginBottom: '4rem' }}>НАШИ <span className="accent-text">ПАРТНЕРЫ</span></h2>
-      <div className="partners-grid">
-        {PARTNERS.map((p, i) => (
-          <div key={i} className="partner-logo">{p}</div>
-        ))}
+// ============================================================
+// PARTNERS
+// ============================================================
+const Partners = () => {
+  const lang = useLang()
+  const t = T[lang]
+  return (
+    <section className="partners-section">
+      <div className="container">
+        <h2 className="section-title" style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          {t.partnersTitle.split(' ').map((word, i, arr) =>
+            i === arr.length - 1
+              ? <span key={i} className="accent-text"> {word}</span>
+              : <React.Fragment key={i}>{word} </React.Fragment>
+          )}
+        </h2>
+        <div className="partners-grid">
+          {PARTNERS.map((p, i) => <div key={i} className="partner-logo">{p}</div>)}
+        </div>
       </div>
-    </div>
-  </section>
-)
+    </section>
+  )
+}
 
-const Footer = () => (
-  <footer id="contacts" style={{ padding: '5rem 0 2rem', borderTop: '1px solid #eee' }}>
-    <div className="container footer-grid">
-      <div id="stores">
-        <div className="logo" style={{ marginBottom: '1.5rem' }}>AGYM<span className="accent-text">POWER</span></div>
-        <h4 style={{ textTransform: 'uppercase', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><MapPin size={18} className="accent-text" /> Шымкент</h4>
-        <ul style={{ listStyle: 'none', color: '#666', fontSize: '0.9rem', lineHeight: '2.2' }}>
-          {SHYMKENT_STORES.map((s, i) => (
-            <li key={i}>
-              <a href={s.map} target="_blank" rel="noopener noreferrer" className="map-link">
-                {s.address}
+// ============================================================
+// FOOTER
+// ============================================================
+const Footer = ({ lang }) => {
+  const t = T[lang]
+  return (
+    <footer id="contacts" className="footer">
+      <div className="footer-top">
+        <div className="container footer-grid">
+          {/* Col 1 — Brand + Subscribe */}
+          <div>
+            <div className="footer-logo">AGYM<span className="accent-text">POWER</span></div>
+            <p className="footer-desc">{t.footerDesc}</p>
+            <div className="footer-subscribe">
+              <input type="email" placeholder={t.footerEmailPlaceholder} />
+              <button className="btn">{t.footerSubscribe}</button>
+            </div>
+            <div className="footer-social">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram">
+                <Instagram size={16} />
               </a>
-            </li>
-          ))}
-        </ul>
-        <p style={{ marginTop: '1rem', color: '#666', fontSize: '0.9rem' }}>Алматы, ул. Абая, 150</p>
-        <p style={{ color: '#000', fontSize: '1rem', fontWeight: 700, marginTop: '0.5rem' }}>+7 700 111 2233</p>
-      </div>
-    </div>
-    <div className="container" style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #eee', textAlign: 'center', fontSize: '0.8rem', color: '#999' }}>
-      &copy; 2026 Agym Nutrition Kazakhstan. Все права защищены.
-    </div>
-  </footer>
-)
+              <a href="https://wa.me/77001112233" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="WhatsApp">
+                <MessageCircle size={16} />
+              </a>
+              <a href="https://t.me/agympower" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Telegram">TG</a>
+            </div>
+          </div>
 
-const OrderModal = ({ product, isOpen, onClose }) => {
+          {/* Col 2 — Stores */}
+          <div className="footer-col" id="stores">
+            <h4><MapPin size={14} style={{ display: 'inline', marginRight: '0.4rem' }} />{t.footerStores}</h4>
+            <ul>
+              {t.stores.map((s, i) => (
+                <li key={i}>
+                  <a href={s.map} target="_blank" rel="noopener noreferrer" className="map-link">{s.address}</a>
+                </li>
+              ))}
+              <li style={{ marginTop: '0.5rem' }}>
+                <span style={{ color: '#555', fontSize: '0.8rem' }}>{t.footerAlmaty}</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 3 — Help */}
+          <div className="footer-col">
+            <h4>{t.footerHelp}</h4>
+            <ul>
+              {t.footerHelpLinks.map((link, i) => (
+                <li key={i}><a href={i === 0 ? '#catalog' : '#contacts'}>{link}</a></li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Col 4 — Contacts */}
+          <div className="footer-col">
+            <h4>{t.footerContacts}</h4>
+            <ul>
+              <li><a href="tel:+77001112233" className="footer-phone">+7 700 111 2233</a></li>
+              <li style={{ marginTop: '0.5rem' }}>
+                <span style={{ color: '#555', fontSize: '0.8rem' }}>{t.footerWorkdays}</span>
+              </li>
+              <li>
+                <span style={{ color: '#555', fontSize: '0.8rem' }}>{t.footerWeekend}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div className="footer-bottom">
+        <div className="container">{t.footerCopy}</div>
+      </div>
+    </footer>
+  )
+}
+
+// ============================================================
+// ORDER MODAL
+// ============================================================
+const OrderModal = ({ product, isOpen, onClose, lang }) => {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('87001112233')
+  const t = T[lang]
 
   if (!isOpen) return null
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const msg = `Привет! Хочу заказать "${product}".\nИмя: ${name}\nТелефон: ${phone}`
+    const msg = t.modalWhatsappMsg(product, name, phone)
     window.open(`https://wa.me/77001112233?text=${encodeURIComponent(msg)}`, '_blank')
     onClose()
   }
 
   return (
     <AnimatePresence>
-      <motion.div 
+      <motion.div
         className="modal-overlay"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
       >
-        <motion.div 
+        <motion.div
           className="modal"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
+          initial={{ scale: 0.92, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.92, opacity: 0 }}
           onClick={e => e.stopPropagation()}
         >
-          <button className="modal-close" onClick={onClose}><X size={24} /></button>
-          <h2 style={{ marginBottom: '1rem' }}>Оформить <span className="accent-text">Заказ</span></h2>
-          <p style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '2rem' }}>{product}</p>
+          <button className="modal-close" onClick={onClose}><X size={22} /></button>
+          <span className="section-title-sm" style={{ display: 'block', marginBottom: '0.5rem' }}>{t.modalTag}</span>
+          <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.2rem', letterSpacing: '2px', marginBottom: '0.5rem' }}>
+            {t.modalTitle} <span className="accent-text">{t.modalTitleAccent}</span>
+          </h2>
+          <p style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '2rem', color: '#aaa' }}>{product}</p>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Ваше имя</label>
-              <input type="text" placeholder="Александр" required value={name} onChange={e => setName(e.target.value)} />
+              <label>{t.modalName}</label>
+              <input type="text" placeholder={t.modalNamePlaceholder} required value={name} onChange={e => setName(e.target.value)} />
             </div>
             <div className="form-group">
-              <label>Номер телефона</label>
+              <label>{t.modalPhone}</label>
               <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)} />
             </div>
             <button type="submit" className="btn" style={{ width: '100%', justifyContent: 'center' }}>
-              Заказать через WhatsApp
+              <MessageCircle size={18} /> {t.modalSubmit}
             </button>
           </form>
         </motion.div>
@@ -352,40 +1112,56 @@ const OrderModal = ({ product, isOpen, onClose }) => {
   )
 }
 
+// ============================================================
+// CERTIFICATE MODAL
+// ============================================================
 const CertificateModal = ({ certificate, isOpen, onClose }) => {
   if (!isOpen || !certificate) return null
-
   return (
     <AnimatePresence>
-      <motion.div 
+      <motion.div
         className="modal-overlay certificate-modal-overlay"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
       >
-        <motion.div 
+        <motion.div
           className="modal certificate-modal"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 20 }}
           onClick={e => e.stopPropagation()}
         >
-          <button className="modal-close" onClick={onClose}><X size={32} /></button>
+          <button className="modal-close" onClick={onClose} aria-label="Close modal">
+            <X size={32} />
+          </button>
+          
           <div className="certificate-full-img-container">
             <img src={certificate.img} alt={certificate.title} className="certificate-full-img" />
           </div>
-          <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{certificate.title}</h2>
-            <p className="accent-text">{certificate.accent}</p>
-          </div>
+          
+          <h2>{certificate.title}</h2>
+          <p className="accent-text">{certificate.accent}</p>
         </motion.div>
       </motion.div>
     </AnimatePresence>
   )
 }
 
+// ============================================================
+// BACKGROUND SHAPES
+// ============================================================
+const BackgroundShapes = () => (
+  <div className="bg-shapes">
+    <div className="bg-shape" style={{ width: '500px', height: '500px', top: '-150px', right: '-100px' }} />
+    <div className="bg-shape" style={{ width: '400px', height: '400px', bottom: '15%', left: '-80px', animationDelay: '-7s' }} />
+  </div>
+)
+
+// ============================================================
+// APP
+// ============================================================
 function App() {
+  const [lang, setLang] = useState(() => localStorage.getItem('agym-lang') || 'ru')
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [selectedCertificate, setSelectedCertificate] = useState(null)
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
@@ -393,15 +1169,17 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
-  // Header scroll effect & close menu on resize
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-    }
-    const handleResize = () => {
-      if (window.innerWidth > 768) setIsMenuOpen(false)
-    }
-    
+    document.documentElement.style.setProperty('color-scheme', 'dark')
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('agym-lang', lang)
+  }, [lang])
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20)
+    const handleResize = () => { if (window.innerWidth > 768) setIsMenuOpen(false) }
     window.addEventListener('scroll', handleScroll)
     window.addEventListener('resize', handleResize)
     return () => {
@@ -410,62 +1188,41 @@ function App() {
     }
   }, [])
 
-  const handleOrder = (product) => {
-    setSelectedProduct(product)
-    setIsOrderModalOpen(true)
-  }
-
-  const handleViewCertificate = (cert) => {
-    setSelectedCertificate(cert)
-    setIsCertModalOpen(true)
-  }
+  const handleOrder = (product) => { setSelectedProduct(product); setIsOrderModalOpen(true) }
+  const handleViewCertificate = (cert) => { setSelectedCertificate(cert); setIsCertModalOpen(true) }
 
   return (
-    <div className={`page-wrapper ${isMenuOpen ? 'menu-open' : ''}`}>
-      <Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} isScrolled={isScrolled} />
-      <Hero />
-      <ProductScroller onOrder={handleOrder} />
-      <Benefits onViewCertificate={handleViewCertificate} />
-      <WhyUs />
-      <TopPicks onOrder={handleOrder} />
-      
-      {/* Vision Section */}
-      <section id="about" style={{ padding: '8rem 0', background: '#000', color: '#fff' }}>
-        <div className="container">
-          <motion.h2 
-            className="section-title"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            НАША <span className="accent-text">МИССИЯ</span>
-          </motion.h2>
-          <motion.p 
-            style={{ fontSize: '1.5rem', lineHeight: '1.4', maxWidth: '800px', opacity: 0.8 }}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            Мы не просто продаем спортивное питание. Мы создаем культуру победы. Agym Nutrition — это топливо для тех, кто готов идти до конца в каждом сете, в каждом повторении.
-          </motion.p>
-        </div>
-      </section>
+    <LangContext.Provider value={lang}>
+      <div className={`page-wrapper ${isMenuOpen ? 'menu-open' : ''}`}>
+        <BackgroundShapes />
+        <AnnouncementBar />
+        <Header
+          isMenuOpen={isMenuOpen}
+          setIsMenuOpen={setIsMenuOpen}
+          isScrolled={isScrolled}
+          lang={lang}
+          setLang={setLang}
+        />
+        <Hero />
+        <ProductScroller onOrder={handleOrder} />
+        <Certificates onViewCertificate={handleViewCertificate} />
+        <TopPicks onOrder={handleOrder} />
+        <Partners />
+        <Footer lang={lang} />
 
-      <Partners />
-      <Footer />
-
-      <OrderModal 
-        product={selectedProduct} 
-        isOpen={isOrderModalOpen} 
-        onClose={() => setIsOrderModalOpen(false)} 
-      />
-
-      <CertificateModal 
-        certificate={selectedCertificate} 
-        isOpen={isCertModalOpen} 
-        onClose={() => setIsCertModalOpen(false)} 
-      />
-    </div>
+        <OrderModal
+          product={selectedProduct}
+          isOpen={isOrderModalOpen}
+          onClose={() => setIsOrderModalOpen(false)}
+          lang={lang}
+        />
+        <CertificateModal
+          certificate={selectedCertificate}
+          isOpen={isCertModalOpen}
+          onClose={() => setIsCertModalOpen(false)}
+        />
+      </div>
+    </LangContext.Provider>
   )
 }
 
