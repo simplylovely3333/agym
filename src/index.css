@@ -1379,3 +1379,98 @@ body {
     border-right: none !important;
   }
 }
+
+/* ========================
+   FOOTER BOTTOM CONTENT
+   ======================== */
+.footer-bottom-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.developer-signature {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+/* ========================
+   INTERACTIVE ADDRESS & MAP
+   ======================== */
+.interactive-address-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.address-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  transition: var(--transition);
+}
+
+.interactive-address-container:hover .address-text {
+  color: var(--primary);
+}
+
+.map-mini-popover {
+  position: absolute;
+  bottom: calc(100% + 15px);
+  left: 0;
+  width: 320px;
+  height: 240px;
+  background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-accent);
+  border-radius: 12px;
+  padding: 8px;
+  z-index: 1000;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--primary-glow);
+}
+
+.map-iframe-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #111;
+}
+
+.map-popover-arrow {
+  position: absolute;
+  top: 100%;
+  left: 30px;
+  width: 15px;
+  height: 15px;
+  background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--border-accent);
+  border-bottom: 1px solid var(--border-accent);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+@media (max-width: 768px) {
+  .map-mini-popover {
+    width: 280px;
+    height: 200px;
+    left: 50%;
+    transform: translateX(-50%) !important;
+  }
+  .map-popover-arrow {
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%) rotate(45deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-bottom-content {
+    flex-direction: column;
+    text-align: center;
+  }
+}

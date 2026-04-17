@@ -110,10 +110,12 @@ const T = {
     footerStores: 'Магазины',
     footerAlmaty: 'Алматы — ул. Абая, 150',
     footerHelp: 'Помощь',
-    footerHelpLinks: ['Каталог', 'О компании', 'Условия доставки', 'Оплата', 'Возврат'],
+    footerHelpLinks: ['Каталог', 'О компании'],
     footerContacts: 'Контакты',
     footerWorkdays: 'Пн–Пт: 9:00 – 21:00',
     footerWeekend: 'Сб–Вс: 10:00 – 20:00',
+    footerLegal: 'Юридический адрес',
+    legalAddress: 'ТОО BEREKET MEAT GROUP\nг. Жанаозен, пр. Мангистау 3\n130200',
     footerCopy: '© 2026 Agym Nutrition Kazakhstan. Все права защищены.',
 
     // Modal
@@ -237,10 +239,12 @@ const T = {
     footerStores: 'Дүкендер',
     footerAlmaty: 'Алматы — Абай к-сі, 150',
     footerHelp: 'Көмек',
-    footerHelpLinks: ['Каталог', 'Компания туралы', 'Жеткізу шарттары', 'Төлем', 'Қайтару'],
+    footerHelpLinks: ['Каталог', 'Компания туралы'],
     footerContacts: 'Байланыс',
     footerWorkdays: 'Дс–Жм: 9:00 – 21:00',
     footerWeekend: 'Сс–Жс: 10:00 – 20:00',
+    footerLegal: 'Заңды мекенжай',
+    legalAddress: 'ТОО BEREKET MEAT GROUP\nЖаңаөзен қ., Маңғыстау даңғылы 3\n130200',
     footerCopy: '© 2026 Agym Nutrition Kazakhstan. Барлық құқықтар қорғалған.',
 
     modalTag: 'Тапсырыс рәсімдеу',
@@ -361,10 +365,12 @@ const T = {
     footerStores: 'Stores',
     footerAlmaty: 'Almaty — Abay St., 150',
     footerHelp: 'Help',
-    footerHelpLinks: ['Catalog', 'About company', 'Delivery terms', 'Payment', 'Returns'],
+    footerHelpLinks: ['Catalog', 'About company'],
     footerContacts: 'Contacts',
     footerWorkdays: 'Mon–Fri: 9:00 – 21:00',
     footerWeekend: 'Sat–Sun: 10:00 – 20:00',
+    footerLegal: 'Legal Address',
+    legalAddress: 'TOO BEREKET MEAT GROUP\nZhanaozen, Mangistau Ave 3\n130200',
     footerCopy: '© 2026 Agym Nutrition Kazakhstan. All rights reserved.',
 
     modalTag: 'Checkout',
@@ -982,6 +988,55 @@ const Partners = () => {
 }
 
 // ============================================================
+// INTERACTIVE ADDRESS WITH MINI-MAP
+// ============================================================
+const InteractiveAddress = ({ address }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const mapUrl = `https://www.google.com/maps?q=${encodeURIComponent(address.replace(/\n/g, ' '))}&output=embed`
+
+  return (
+    <div className="interactive-address-container"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      <div className="address-text">
+        {address.split('\n').map((line, i) => (
+          <React.Fragment key={i}>
+            {line}<br />
+          </React.Fragment>
+        ))}
+      </div>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            className="map-mini-popover"
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+          >
+            <div className="map-iframe-wrapper">
+              <iframe
+                title="Mini Map"
+                src={mapUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+              />
+            </div>
+            <div className="map-popover-arrow" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// ============================================================
 // FOOTER
 // ============================================================
 const Footer = ({ lang }) => {
@@ -1024,6 +1079,11 @@ const Footer = ({ lang }) => {
             </ul>
           </div>
 
+          <div className="footer-col">
+            <h4>{t.footerLegal}</h4>
+            <InteractiveAddress address={t.legalAddress} />
+          </div>
+
           {/* Col 3 — Help */}
           <div className="footer-col">
             <h4>{t.footerHelp}</h4>
@@ -1050,7 +1110,12 @@ const Footer = ({ lang }) => {
         </div>
       </div>
       <div className="footer-bottom">
-        <div className="container">{t.footerCopy}</div>
+        <div className="container footer-bottom-content">
+          <span>{t.footerCopy}</span>
+          <div className="developer-signature">
+            Сделано <span className="accent-text">Fintech</span>
+          </div>
+        </div>
       </div>
     </footer>
   )
