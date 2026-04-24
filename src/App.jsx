@@ -6,6 +6,10 @@ import {
   MapPin, ChevronLeft, ChevronRight, Search, ShoppingBag
 } from 'lucide-react'
 import './index.css'
+import titanWheyImg from './assets/Agym Products New All 2025/2.png'
+import titanMassImg from './assets/Agym Products New All 2025/3.png'
+import bcaaImg from './assets/Agym Products New All 2025/9.png'
+import creatineImg from './assets/Agym Products New All 2025/10.png'
 
 // ============================================================
 // TRANSLATIONS
@@ -451,6 +455,13 @@ const CERT_IMGS = [
 
 const PARTNERS = ["Gold's Gym", 'World Class', 'Invictus', 'FitNation', 'Olympic']
 
+const PRODUCT_IMAGES = {
+  1: titanMassImg,
+  2: titanWheyImg,
+  3: bcaaImg,
+  4: creatineImg,
+}
+
 // ============================================================
 // LANGUAGE CONTEXT
 // ============================================================
@@ -805,7 +816,12 @@ const ProductScroller = ({ onOrder }) => {
                   className="product-img"
                   style={{ background: `linear-gradient(160deg, ${item.bgColor} 0%, #0a0a0a 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
                 >
-                  <ProductVisual product={item} />
+                  <img
+                    src={PRODUCT_IMAGES[item.id]}
+                    alt={item.name}
+                    className="product-photo"
+                    loading="lazy"
+                  />
                 </div>
                 <div className="card-type">{item.type}</div>
                 <h3>{item.name}</h3>
@@ -934,7 +950,12 @@ const TopPicks = ({ onOrder }) => {
                 className="product-img"
                 style={{ background: `linear-gradient(160deg, ${p.bgColor} 0%, #0a0a0a 100%)`, height: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.2rem' }}
               >
-                <ProductVisual product={p} />
+                <img
+                  src={PRODUCT_IMAGES[p.id]}
+                  alt={p.name}
+                  className="product-photo"
+                  loading="lazy"
+                />
               </div>
               <div className="card-type" style={{ marginTop: '1rem' }}>{p.type}</div>
               <h3 className="product-title">{p.name}</h3>
