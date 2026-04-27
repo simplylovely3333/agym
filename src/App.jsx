@@ -32,7 +32,7 @@ const T = {
     ],
 
     // Hero
-    heroTag: 'Казахстан • Шымкент',
+    heroTag: 'Казахстан',
     heroSub: 'Премиальное спортивное питание — RED EDITION 2.0. Топливо для тех, кто идёт до конца в каждом сете.',
     heroCta: 'Смотреть каталог',
     heroCtaContact: 'Контакты',
@@ -158,7 +158,7 @@ const T = {
       'Қазақстан бойынша жұмыс істейміз',
     ],
 
-    heroTag: 'Қазақстан • Шымкент',
+    heroTag: 'Қазақстан',
     heroSub: 'Спортшыларға арналған премиум тамақтану — RED EDITION 2.0. Әр серияда аяғына дейін баратындарға арналған отын.',
     heroCta: 'Каталогты көру',
     heroCtaContact: 'Байланыс',
@@ -284,7 +284,7 @@ const T = {
       'Delivery across Kazakhstan',
     ],
 
-    heroTag: 'Kazakhstan • Shymkent',
+    heroTag: 'Kazakhstan',
     heroSub: 'Premium sports nutrition — RED EDITION 2.0. Fuel for those who go all the way in every set.',
     heroCta: 'View catalog',
     heroCtaContact: 'Contacts',
@@ -610,19 +610,6 @@ const Hero = () => {
           <a href="#contacts" className="btn btn-outline">{t.heroCtaContact}</a>
         </motion.div>
 
-        <motion.div
-          style={{ display: 'flex', gap: '3rem', marginTop: '4rem', flexWrap: 'wrap' }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9 }}
-        >
-          {[['5+', t.stat1], ['3', t.stat2], ['50+', t.stat3]].map(([num, label]) => (
-            <div key={label} style={{ borderLeft: '2px solid #d32f2f', paddingLeft: '1.2rem' }}>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.2rem', lineHeight: 1, color: '#fff', letterSpacing: '2px' }}>{num}</div>
-              <div style={{ fontSize: '0.75rem', color: '#aaa', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '0.3rem' }}>{label}</div>
-            </div>
-          ))}
-        </motion.div>
       </motion.div>
     </section>
   )
@@ -1085,16 +1072,10 @@ const Footer = ({ lang }) => {
             </div>
           </div>
 
-          {/* Col 2 — Stores */}
+          {/* Col 2 — Legal */}
           <div className="footer-col" id="stores">
-            <h4><MapPin size={14} style={{ display: 'inline', marginRight: '0.4rem' }} />{t.footerStores}</h4>
-            <ul>
-              {t.stores.map((s, i) => (
-                <li key={i}>
-                  <a href={s.map} target="_blank" rel="noopener noreferrer" className="map-link">{s.address}</a>
-                </li>
-              ))}
-            </ul>
+            <h4>{t.footerLegal}</h4>
+            <InteractiveAddress address={t.legalAddress} />
           </div>
 
           {/* Col 3 — Help */}
