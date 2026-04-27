@@ -552,7 +552,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen, isScrolled, lang, setLang }) => {
               <div className="mobile-menu-links">
                 <a href="#catalog" onClick={() => setIsMenuOpen(false)}>{t.navProducts}</a>
                 <a href="#contacts" onClick={() => setIsMenuOpen(false)}>{t.navContacts}</a>
-                <a href="https://wa.me/77001112233" className="btn" style={{ marginTop: '1.5rem' }}>
+                <a href="https://wa.me/77016644344" className="btn" style={{ marginTop: '1.5rem' }}>
                   {t.navOrder}
                 </a>
                 <div style={{ marginTop: '2rem' }}>
@@ -616,7 +616,7 @@ const Hero = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9 }}
         >
-          {[['5+', t.stat1], ['3', t.stat2], ['50+', t.stat3], ['1000+', t.stat4]].map(([num, label]) => (
+          {[['5+', t.stat1], ['3', t.stat2], ['50+', t.stat3]].map(([num, label]) => (
             <div key={label} style={{ borderLeft: '2px solid #d32f2f', paddingLeft: '1.2rem' }}>
               <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.2rem', lineHeight: 1, color: '#fff', letterSpacing: '2px' }}>{num}</div>
               <div style={{ fontSize: '0.75rem', color: '#aaa', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '0.3rem' }}>{label}</div>
@@ -1075,10 +1075,10 @@ const Footer = ({ lang }) => {
               <button className="btn">{t.footerSubscribe}</button>
             </div>
             <div className="footer-social">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram">
+              <a href="https://www.instagram.com/agym.kz?igsh=dWNqbHd5cjVhMHZp" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram">
                 <Instagram size={16} />
               </a>
-              <a href="https://wa.me/77001112233" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="WhatsApp">
+              <a href="https://wa.me/77016644344" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="WhatsApp">
                 <MessageCircle size={16} />
               </a>
               <a href="https://t.me/agympower" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Telegram">TG</a>
@@ -1094,15 +1094,7 @@ const Footer = ({ lang }) => {
                   <a href={s.map} target="_blank" rel="noopener noreferrer" className="map-link">{s.address}</a>
                 </li>
               ))}
-              <li style={{ marginTop: '0.5rem' }}>
-                <span style={{ color: '#555', fontSize: '0.8rem' }}>{t.footerAlmaty}</span>
-              </li>
             </ul>
-          </div>
-
-          <div className="footer-col">
-            <h4>{t.footerLegal}</h4>
-            <InteractiveAddress address={t.legalAddress} />
           </div>
 
           {/* Col 3 — Help */}
@@ -1119,7 +1111,7 @@ const Footer = ({ lang }) => {
           <div className="footer-col">
             <h4>{t.footerContacts}</h4>
             <ul>
-              <li><a href="tel:+77001112233" className="footer-phone">+7 700 111 2233</a></li>
+              <li><a href="tel:+77016644344" className="footer-phone">+7 701 664 4344</a></li>
               <li style={{ marginTop: '0.5rem' }}>
                 <span style={{ color: '#555', fontSize: '0.8rem' }}>{t.footerWorkdays}</span>
               </li>
@@ -1147,7 +1139,7 @@ const Footer = ({ lang }) => {
 // ============================================================
 const OrderModal = ({ product, isOpen, onClose, lang }) => {
   const [name, setName] = useState('')
-  const [phone, setPhone] = useState('87001112233')
+  const [phone, setPhone] = useState('87016644344')
   const t = T[lang]
 
   if (!isOpen) return null
@@ -1155,7 +1147,7 @@ const OrderModal = ({ product, isOpen, onClose, lang }) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     const msg = t.modalWhatsappMsg(product, name, phone)
-    window.open(`https://wa.me/77001112233?text=${encodeURIComponent(msg)}`, '_blank')
+    window.open(`https://wa.me/77016644344?text=${encodeURIComponent(msg)}`, '_blank')
     onClose()
   }
 
@@ -1293,7 +1285,6 @@ function App() {
         <ProductScroller onOrder={handleOrder} />
         <Certificates onViewCertificate={handleViewCertificate} />
         <TopPicks onOrder={handleOrder} />
-        <Partners />
         <Footer lang={lang} />
 
         <OrderModal
