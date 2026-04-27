@@ -58,6 +58,7 @@ const T = {
       { title: 'Сертификат', accent: 'HACCP', text: 'Анализ рисков и критические контрольные точки.' },
       { title: 'Сертификат', accent: 'ISO 22000', text: 'Система менеджмента безопасности пищепродуктов.' },
       { title: 'Сертификат', accent: 'STANDARD', text: 'Соответствие мировым отраслевым стандартам.' },
+      { title: 'Сертификат', accent: 'ANTI-DOPING', text: 'Протестировано лабораторией QABL, Qatar. Запрещённые вещества WADA не обнаружены.' },
     ],
 
     // Catalog
@@ -191,6 +192,7 @@ const T = {
       { title: 'Сертификат', accent: 'HACCP', text: 'Тәуекелдерді талдау және бақылау нүктелері.' },
       { title: 'Сертификат', accent: 'ISO 22000', text: 'Азық-түлік қауіпсіздігін басқару жүйесі.' },
       { title: 'Сертификат', accent: 'STANDARD', text: 'Әлемдік салалық стандарттарға сәйкестік.' },
+      { title: 'Сертификат', accent: 'ANTI-DOPING', text: 'QABL зертханасы тексерген, Qatar. WADA тыйым салған заттар табылмады.' },
     ],
 
     catalogTag: 'Хит өнімдер',
@@ -317,6 +319,7 @@ const T = {
       { title: 'Certificate', accent: 'HACCP', text: 'Hazard analysis and critical control points.' },
       { title: 'Certificate', accent: 'ISO 22000', text: 'Food safety management system.' },
       { title: 'Certificate', accent: 'STANDARD', text: 'Compliance with global industry standards.' },
+      { title: 'Certificate', accent: 'ANTI-DOPING', text: 'Tested by QABL Laboratory, Qatar. No WADA prohibited substances detected.' },
     ],
 
     catalogTag: 'Best sellers',
@@ -451,6 +454,7 @@ const CERT_IMGS = [
   '/assets/certificates/file-001 copy 3.png',
   '/assets/certificates/file-001 copy 4.png',
   '/assets/certificates/file-001 copy 5.png',
+  '/assets/certificates/anti-doping.jpeg',
 ]
 
 const PARTNERS = ["Gold's Gym", 'World Class', 'Invictus', 'FitNation', 'Olympic']
@@ -1071,12 +1075,6 @@ const Footer = ({ lang }) => {
             <h4>{t.footerContacts}</h4>
             <ul>
               <li><a href="tel:+77016644344" className="footer-phone">+7 701 664 4344</a></li>
-              <li style={{ marginTop: '0.5rem' }}>
-                <span style={{ color: '#555', fontSize: '0.8rem' }}>{t.footerWorkdays}</span>
-              </li>
-              <li>
-                <span style={{ color: '#555', fontSize: '0.8rem' }}>{t.footerWeekend}</span>
-              </li>
             </ul>
           </div>
         </div>
