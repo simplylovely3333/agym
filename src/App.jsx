@@ -24,7 +24,6 @@ const T = {
 
     // Announcement
     announce: [
-      'Бесплатная доставка от 10 000 ₸',
       'Новинка: Titan Whey Black Edition',
       'Скидка 20% при заказе от 3 позиций',
       'Официальный поставщик Gold\'s Gym',
@@ -152,7 +151,6 @@ const T = {
     navOrder: 'Тапсырыс',
 
     announce: [
-      '10 000 ₸-дан тегін жеткізу',
       'Жаңалық: Titan Whey Black Edition',
       '3 тауардан тапсырыс берсеңіз — 20% жеңілдік',
       'Gold\'s Gym ресми жеткізушісі',
@@ -279,7 +277,6 @@ const T = {
     navOrder: 'Order',
 
     announce: [
-      'Free delivery from 10,000 ₸',
       'New: Titan Whey Black Edition',
       '20% off when ordering 3+ items',
       'Official Gold\'s Gym supplier',
