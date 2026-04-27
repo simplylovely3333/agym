@@ -757,7 +757,7 @@ const ProductVisual = ({ product }) => {
 // ============================================================
 // PRODUCT SCROLLER
 // ============================================================
-const ProductScroller = ({ onOrder }) => {
+const ProductScroller = ({ onOrder, onView }) => {
   const lang = useLang()
   const t = T[lang]
   const containerRef = React.useRef(null)
@@ -795,13 +795,13 @@ const ProductScroller = ({ onOrder }) => {
                 key={item.id}
                 className="scroller-card"
                 whileHover={{ y: -8 }}
-                onClick={() => onOrder(item.name)}
                 style={{ cursor: 'pointer', minWidth: '300px' }}
               >
                 <div className="card-badge">Sale!</div>
                 <div
                   className="product-img"
                   style={{ background: `linear-gradient(160deg, ${item.bgColor} 0%, #0a0a0a 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
+                  onClick={() => onView(item)}
                 >
                   <img
                     src={PRODUCT_IMAGES[item.id]}
@@ -810,13 +810,10 @@ const ProductScroller = ({ onOrder }) => {
                     loading="lazy"
                   />
                 </div>
-                <div className="card-type">{item.type}</div>
-                <h3>{item.name}</h3>
-                <p style={{ fontSize: '0.75rem', color: '#777', marginBottom: '0.6rem', lineHeight: 1.4 }}>{item.subtitle}</p>
-                <div className="card-price-row">
-                  {/* Prices temporarily hidden */}
-                </div>
-                <button className="btn" style={{ width: '100%', padding: '10px', fontSize: '0.78rem' }}>{t.buyNow}</button>
+                <div className="card-type" onClick={() => onView(item)}>{item.type}</div>
+                <h3 onClick={() => onView(item)}>{item.name}</h3>
+                <p style={{ fontSize: '0.75rem', color: '#777', marginBottom: '0.6rem', lineHeight: 1.4 }} onClick={() => onView(item)}>{item.subtitle}</p>
+                <button className="btn" style={{ width: '100%', padding: '10px', fontSize: '0.78rem' }} onClick={() => onOrder(item.name)}>{t.buyNow}</button>
               </motion.div>
             ))}
           </div>
@@ -903,7 +900,7 @@ const Certificates = ({ onViewCertificate }) => {
 // ============================================================
 // CATALOG / TOP PICKS
 // ============================================================
-const TopPicks = ({ onOrder }) => {
+const TopPicks = ({ onOrder, onView }) => {
   const lang = useLang()
   const t = T[lang]
   const products = PRODUCTS_BASE.map((p, i) => ({ ...p, ...T[lang].products[i] }))
@@ -929,13 +926,13 @@ const TopPicks = ({ onOrder }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              onClick={() => onOrder(p.name)}
               style={{ cursor: 'pointer' }}
             >
               <div className="card-badge">Sale!</div>
               <div
                 className="product-img"
                 style={{ background: `linear-gradient(160deg, ${p.bgColor} 0%, #0a0a0a 100%)`, height: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.2rem' }}
+                onClick={() => onView(p)}
               >
                 <img
                   src={PRODUCT_IMAGES[p.id]}
@@ -944,25 +941,17 @@ const TopPicks = ({ onOrder }) => {
                   loading="lazy"
                 />
               </div>
-              <div className="card-type" style={{ marginTop: '1rem' }}>{p.type}</div>
-              <h3 className="product-title">{p.name}</h3>
-              <p style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.5rem', lineHeight: 1.5 }}>{p.subtitle}</p>
-              <ul style={{ listStyle: 'none', marginBottom: '1rem' }}>
+              <div className="card-type" style={{ marginTop: '1rem' }} onClick={() => onView(p)}>{p.type}</div>
+              <h3 className="product-title" onClick={() => onView(p)}>{p.name}</h3>
+              <p style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.5rem', lineHeight: 1.5 }} onClick={() => onView(p)}>{p.subtitle}</p>
+              <ul style={{ listStyle: 'none', marginBottom: '1rem' }} onClick={() => onView(p)}>
                 {p.benefits.slice(0, 3).map((b, bi) => (
                   <li key={bi} style={{ fontSize: '0.75rem', color: '#999', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.25rem' }}>
                     <span style={{ color: '#d32f2f', fontWeight: 700, flexShrink: 0 }}>—</span> {b}
                   </li>
                 ))}
               </ul>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem', fontSize: '0.72rem', color: '#555' }}>
-                <span>{t.protein}: <strong style={{ color: '#aaa' }}>{formatUnit(p.protein, lang)}/{t.unitServ}</strong></span>
-                <span>{t.calories}: <strong style={{ color: '#aaa' }}>{p.calories.split(' ')[0]} {t.unitKcalServ}</strong></span>
-                <span style={{ color: '#aaa' }}>{p.servings} {t.unitServ}</span>
-              </div>
-              <div className="card-price-row" style={{ marginBottom: '0.8rem' }}>
-                {/* Prices temporarily hidden */}
-              </div>
-              <button className="btn" style={{ width: '100%' }}>{t.buyNow}</button>
+              <button className="btn" style={{ width: '100%' }} onClick={() => onOrder(p.name)}>{t.buyNow}</button>
             </motion.div>
           ))}
         </div>
@@ -1057,25 +1046,14 @@ const Footer = ({ lang }) => {
           <div>
             <div className="footer-logo">AGYM<span className="accent-text">POWER</span></div>
             <p className="footer-desc">{t.footerDesc}</p>
-            <div className="footer-subscribe">
-              <input type="email" placeholder={t.footerEmailPlaceholder} />
-              <button className="btn">{t.footerSubscribe}</button>
-            </div>
-            <div className="footer-social">
-              <a href="https://www.instagram.com/agym.kz?igsh=dWNqbHd5cjVhMHZp" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram">
-                <Instagram size={16} />
+            <div className="footer-social" style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
+              <a href="https://www.instagram.com/agym.kz?igsh=dWNqbHd5cjVhMHZp" target="_blank" rel="noopener noreferrer" className="social-btn" aria-label="Instagram">
+                <Instagram size={22} /> Instagram
               </a>
-              <a href="https://wa.me/77016644344" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="WhatsApp">
-                <MessageCircle size={16} />
+              <a href="https://wa.me/77016644344" target="_blank" rel="noopener noreferrer" className="social-btn social-btn-wa" aria-label="WhatsApp">
+                <MessageCircle size={22} /> WhatsApp
               </a>
-              <a href="https://t.me/agympower" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Telegram">TG</a>
             </div>
-          </div>
-
-          {/* Col 2 — Legal */}
-          <div className="footer-col" id="stores">
-            <h4>{t.footerLegal}</h4>
-            <InteractiveAddress address={t.legalAddress} />
           </div>
 
           {/* Col 3 — Help */}
@@ -1112,6 +1090,83 @@ const Footer = ({ lang }) => {
         </div>
       </div>
     </footer>
+  )
+}
+
+// ============================================================
+// PRODUCT DETAIL MODAL
+// ============================================================
+const ProductDetailModal = ({ product, isOpen, onClose, onOrder, lang }) => {
+  const t = T[lang]
+  if (!isOpen || !product) return null
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="modal-overlay"
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          className="modal product-detail-modal"
+          initial={{ scale: 0.92, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.92, opacity: 0 }}
+          onClick={e => e.stopPropagation()}
+          style={{ maxWidth: '520px', width: '95%', maxHeight: '90vh', overflowY: 'auto' }}
+        >
+          <button className="modal-close" onClick={onClose}><X size={22} /></button>
+
+          <div style={{ background: `linear-gradient(160deg, ${product.bgColor} 0%, #0a0a0a 100%)`, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem', marginBottom: '1.5rem', minHeight: '200px' }}>
+            <img src={PRODUCT_IMAGES[product.id]} alt={product.name} style={{ maxHeight: '180px', objectFit: 'contain' }} />
+          </div>
+
+          <div className="card-type">{product.type}</div>
+          <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2rem', letterSpacing: '2px', margin: '0.3rem 0 0.5rem' }}>{product.name}</h2>
+          <p style={{ color: '#999', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: '1.2rem' }}>{product.subtitle}</p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.8rem', marginBottom: '1.2rem' }}>
+            {[
+              { label: t.svgProtein, val: product.protein },
+              { label: t.svgCarbs, val: product.carbs },
+              { label: t.svgEnergy, val: product.calories },
+            ].map(({ label, val }) => (
+              <div key={label} style={{ background: '#111', borderRadius: '8px', padding: '0.8rem', textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#fff' }}>{val}</div>
+                <div style={{ fontSize: '0.65rem', color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</div>
+              </div>
+            ))}
+          </div>
+
+          <ul style={{ listStyle: 'none', marginBottom: '1.5rem' }}>
+            {product.benefits.map((b, i) => (
+              <li key={i} style={{ fontSize: '0.85rem', color: '#ccc', display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                <span style={{ color: '#d32f2f', fontWeight: 700, flexShrink: 0 }}>—</span> {b}
+              </li>
+            ))}
+          </ul>
+
+          <div style={{ display: 'flex', gap: '0.8rem' }}>
+            <button
+              className="btn"
+              style={{ flex: 1, justifyContent: 'center' }}
+              onClick={() => { onClose(); onOrder(product.name) }}
+            >
+              <MessageCircle size={18} /> {t.buyNow}
+            </button>
+            <a
+              href="https://wa.me/77016644344"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-outline"
+              style={{ flex: 1, justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              {t.contactBtn}
+            </a>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   )
 }
 
@@ -1225,6 +1280,8 @@ function App() {
   const [selectedCertificate, setSelectedCertificate] = useState(null)
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
   const [isCertModalOpen, setIsCertModalOpen] = useState(false)
+  const [viewProduct, setViewProduct] = useState(null)
+  const [isProductDetailOpen, setIsProductDetailOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
@@ -1248,6 +1305,7 @@ function App() {
   }, [])
 
   const handleOrder = (product) => { setSelectedProduct(product); setIsOrderModalOpen(true) }
+  const handleViewProduct = (product) => { setViewProduct(product); setIsProductDetailOpen(true) }
   const handleViewCertificate = (cert) => { setSelectedCertificate(cert); setIsCertModalOpen(true) }
 
   return (
@@ -1263,9 +1321,9 @@ function App() {
           setLang={setLang}
         />
         <Hero />
-        <ProductScroller onOrder={handleOrder} />
+        <ProductScroller onOrder={handleOrder} onView={handleViewProduct} />
         <Certificates onViewCertificate={handleViewCertificate} />
-        <TopPicks onOrder={handleOrder} />
+        <TopPicks onOrder={handleOrder} onView={handleViewProduct} />
         <Footer lang={lang} />
 
         <OrderModal
@@ -1278,6 +1336,13 @@ function App() {
           certificate={selectedCertificate}
           isOpen={isCertModalOpen}
           onClose={() => setIsCertModalOpen(false)}
+        />
+        <ProductDetailModal
+          product={viewProduct}
+          isOpen={isProductDetailOpen}
+          onClose={() => setIsProductDetailOpen(false)}
+          onOrder={handleOrder}
+          lang={lang}
         />
       </div>
     </LangContext.Provider>
