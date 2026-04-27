@@ -1307,7 +1307,6 @@ function App() {
     <LangContext.Provider value={lang}>
       <div className={`page-wrapper ${isMenuOpen ? 'menu-open' : ''}`}>
         <BackgroundShapes />
-        <AnnouncementBar />
         <Header
           isMenuOpen={isMenuOpen}
           setIsMenuOpen={setIsMenuOpen}
